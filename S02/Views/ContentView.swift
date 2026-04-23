@@ -105,6 +105,7 @@ struct ContentView: View {
             
             item.duration = duration
             modelContext.insert(item)
+            
             do {
                 try modelContext.save()
             } catch {
@@ -135,6 +136,8 @@ struct ContentView: View {
                 let url = FileManager.default
                     .urls(for: .documentDirectory, in: .userDomainMask)[0]
                     .appendingPathComponent("\(UUID().uuidString).m4a")
+                
+                print(url.path)
 
                 let settings: [String: Any] = [
                     AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -148,6 +151,7 @@ struct ContentView: View {
                     recorder.prepareToRecord()
                     recorder.record()
                     audioRecorder = recorder
+                    vm.recordingItem?.audioFilename = url.lastPathComponent
                 } catch {
                     print("recorder error: \(error)")
                 }

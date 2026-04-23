@@ -12,9 +12,20 @@ import SwiftData
 final class Item {
     var timestamp: Date
     var duration: TimeInterval
-    
-    init(timestamp: Date = Date(), duration: TimeInterval = 0) {
+    var audioFilename: String = ""
+
+    init(timestamp: Date = Date(),
+         duration: TimeInterval = 0,
+         audioFilename: String = "") {
         self.timestamp = timestamp
         self.duration = duration
+        self.audioFilename = audioFilename
+    }
+
+    var audioURL: URL? {
+        guard !audioFilename.isEmpty else { return nil }
+        return FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(audioFilename)
     }
 }
