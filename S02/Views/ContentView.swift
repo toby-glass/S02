@@ -24,16 +24,21 @@ struct ContentView: View {
                     }
                     .font(.system(size: 32))
                     .offset(y: -65)
+                    List(items) { item in
+                        NavigationLink(destination: SessionView(item: item)) {
+                            SessionRow(item: item)
+                        }
+                    }
                 }
                 .padding()
             }
             .overlay(alignment: .bottom) {
                 Button {
-                    
+                    record()
                 } label: {
-                    HStack(spacing: 4) {
-                        Text("Start")
-                            .padding(8)
+                    HStack(spacing: 2) {
+                        Text(vm.recording ? "Stop" : "Start")
+                            .padding(10)
                         Image(systemName: "waveform")
                             .font(.system(size: 20))
                             .frame(width: 46, height: 46)
@@ -61,10 +66,15 @@ struct ContentView: View {
         .buttonStyle(.plain)
     }
 
-    private func addItem() {
+    private func record() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            if !vm.recording {
+                vm.recording = true
+            } else {
+                let newItem = Item(timestamp: Date())
+                modelContext.insert(newItem)
+                vm.recording = false
+            }
         }
     }
 

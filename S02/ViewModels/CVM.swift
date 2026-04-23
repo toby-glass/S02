@@ -12,4 +12,5 @@ import Observation
 @Observable
 class CVM: Observable {
     var language: LanguageType = .mandarin
+    var recording: Bool = false
 }
