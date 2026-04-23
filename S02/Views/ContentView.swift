@@ -13,6 +13,9 @@ struct ContentView: View {
     @Environment(CVM.self) var vm
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    @State private var start: Date = Date()
+    @State private var elapsed: TimeInterval = 0
+    @State private var tickTimer: Timer? = nil
 
     var body: some View {
         NavigationStack {
@@ -23,13 +26,18 @@ struct ContentView: View {
                         Spacer()
                     }
                     .font(.system(size: 32))
-                    .offset(y: -65)
-                    List(items) { item in
-                        NavigationLink(destination: SessionView(item: item)) {
-                            SessionRow(item: item)
+                    LazyVStack {
+                        ForEach(items, id: \.id) { item in
+                            NavigationLink(destination: SessionView(item: item)) {
+                                SessionRow(item: item)
+                            }
                         }
                     }
+                    .padding(4)
+                    .background(.gray.opacity(0.15))
+                    .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
                 }
+                .offset(y: -65)
                 .padding()
             }
             .overlay(alignment: .bottom) {
@@ -37,10 +45,10 @@ struct ContentView: View {
                     record()
                 } label: {
                     HStack(spacing: 2) {
-                        Text(vm.recording ? "Stop" : "Start")
+                        Text(buttonText())
                             .padding(10)
-                        Image(systemName: "waveform")
-                            .font(.system(size: 20))
+                        Image(systemName: vm.recording ? "stop.fill" : "waveform")
+                            .font(.system(size: 18))
                             .frame(width: 46, height: 46)
                             .background(.gray.opacity(0.3))
                             .clipShape(Circle())
@@ -67,14 +75,43 @@ struct ContentView: View {
     }
 
     private func record() {
-        withAnimation {
-            if !vm.recording {
-                vm.recording = true
-            } else {
-                let newItem = Item(timestamp: Date())
-                modelContext.insert(newItem)
-                vm.recording = false
+        if !vm.recording {
+            vm.recording = true
+            
+            tickTimer?.invalidate()
+            tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                elapsed = Date().timeIntervalSince(start)
             }
+            RunLoop.main.add(tickTimer!, forMode: .common)
+            
+            let item = Item(timestamp: Date())
+            vm.recordingItem = item
+            start = Date()
+        } else {
+            guard let item = vm.recordingItem else { return }
+            let duration = Date().timeIntervalSince(start)
+            
+            tickTimer?.invalidate()
+            elapsed = 0
+            
+            item.duration = duration
+            modelContext.insert(item)
+            do {
+                try modelContext.save()
+            } catch {
+                print("could not save")
+            }
+            
+            vm.recordingItem = nil
+            vm.recording = false
+        }
+    }
+    
+    private func buttonText() -> String {
+        if vm.recording {
+            return "\(vm.mmss(from: elapsed))"
+        } else {
+            return "Start"
         }
     }
 

@@ -11,8 +11,10 @@ import SwiftData
 @Model
 final class Item {
     var timestamp: Date
+    var duration: TimeInterval
     
-    init(timestamp: Date) {
+    init(timestamp: Date = Date(), duration: TimeInterval = 0) {
         self.timestamp = timestamp
+        self.duration = duration
     }
 }
