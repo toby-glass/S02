@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import AVFoundation
 
 struct ContentView: View {
     
@@ -16,6 +17,7 @@ struct ContentView: View {
     @State private var start: Date = Date()
     @State private var elapsed: TimeInterval = 0
     @State private var tickTimer: Timer? = nil
+    @State private var audioRecorder: AVAudioRecorder? = nil
 
     var body: some View {
         NavigationStack {
@@ -26,6 +28,7 @@ struct ContentView: View {
                         Spacer()
                     }
                     .font(.system(size: 32))
+                    .padding()
                     LazyVStack {
                         ForEach(items, id: \.id) { item in
                             NavigationLink(destination: SessionView(item: item)) {
@@ -34,11 +37,11 @@ struct ContentView: View {
                         }
                     }
                     .padding(4)
-                    .background(.gray.opacity(0.15))
+                    .background(.gray.opacity(0.1))
                     .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
+                    .padding(8)
                 }
                 .offset(y: -65)
-                .padding()
             }
             .overlay(alignment: .bottom) {
                 Button {
@@ -87,10 +90,16 @@ struct ContentView: View {
             let item = Item(timestamp: Date())
             vm.recordingItem = item
             start = Date()
+
+            startAudioRecording()
         } else {
             guard let item = vm.recordingItem else { return }
             let duration = Date().timeIntervalSince(start)
-            
+
+            audioRecorder?.stop()
+            audioRecorder = nil
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+
             tickTimer?.invalidate()
             elapsed = 0
             
@@ -106,7 +115,46 @@ struct ContentView: View {
             vm.recording = false
         }
     }
-    
+
+    private func startAudioRecording() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+            try session.setActive(true)
+        } catch {
+            print("audio session error: \(error)")
+            return
+        }
+
+        session.requestRecordPermission { granted in
+            guard granted else {
+                print("microphone permission denied")
+                return
+            }
+            DispatchQueue.main.async {
+                let url = FileManager.default
+                    .urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    .appendingPathComponent("\(UUID().uuidString).m4a")
+
+                let settings: [String: Any] = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 44100,
+                    AVNumberOfChannelsKey: 1,
+                    AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
+                ]
+
+                do {
+                    let recorder = try AVAudioRecorder(url: url, settings: settings)
+                    recorder.prepareToRecord()
+                    recorder.record()
+                    audioRecorder = recorder
+                } catch {
+                    print("recorder error: \(error)")
+                }
+            }
+        }
+    }
+
     private func buttonText() -> String {
         if vm.recording {
             return "\(vm.mmss(from: elapsed))"

@@ -21,6 +21,7 @@ struct SessionRow: View {
                 .font(.system(size: 14))
         }
         .padding(12)
+        .background(.background.opacity(0.001))
     }
 }
 
