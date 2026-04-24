@@ -25,7 +25,7 @@ struct ContentView: View {
                 VStack {
                     VStack(spacing: 1) {
                         HStack {
-                            Text("4月24日")
+                            Text("\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
                             Spacer()
                         }
                         HStack {
@@ -43,10 +43,15 @@ struct ContentView: View {
                             Spacer()
                         }
                         .padding(.horizontal, 8)
-                        LazyVStack {
-                            ForEach(items, id: \.id) { item in
+                        LazyVStack(spacing: 4) {
+                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                                 NavigationLink(destination: SessionView(item: item)) {
                                     SessionRow(item: item)
+                                }
+                                
+                                if index < items.count - 1 {
+                                    Divider()
+                                        .padding(.horizontal, 8)
                                 }
                             }
                         }
