@@ -10,15 +10,15 @@ import AVFoundation
 
 struct SessionView: View {
 
+    @Environment(CVM.self) var vm
     var item: Item
-
     @State private var player: AVAudioPlayer? = nil
     @State private var isPlaying: Bool = false
 
     var body: some View {
         VStack(spacing: 16) {
             Text(item.timestamp.formatted(date: .abbreviated, time: .shortened))
-            Text(String(format: "%.1fs", item.duration))
+            Text(vm.mmss(from: item.duration))
                 .foregroundStyle(.secondary)
 
             if item.audioURL != nil {

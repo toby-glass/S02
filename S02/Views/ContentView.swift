@@ -25,7 +25,7 @@ struct ContentView: View {
                 VStack {
                     VStack(spacing: 1) {
                         HStack {
-                            Text("2026年4月24日")
+                            Text("4月24日")
                             Spacer()
                         }
                         HStack {
@@ -37,16 +37,23 @@ struct ContentView: View {
                     .font(.system(size: 30))
                     .fontWeight(.bold)
                     .padding()
-                    LazyVStack {
-                        ForEach(items, id: \.id) { item in
-                            NavigationLink(destination: SessionView(item: item)) {
-                                SessionRow(item: item)
+                    VStack {
+                        HStack {
+                            Text("Sessions")
+                            Spacer()
+                        }
+                        .padding(.horizontal, 8)
+                        LazyVStack {
+                            ForEach(items, id: \.id) { item in
+                                NavigationLink(destination: SessionView(item: item)) {
+                                    SessionRow(item: item)
+                                }
                             }
                         }
+                        .padding(4)
+                        .background(.gray.opacity(0.1))
+                        .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
                     }
-                    .padding(4)
-                    .background(.gray.opacity(0.1))
-                    .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
                     .padding(8)
                 }
                 .offset(y: -65)
