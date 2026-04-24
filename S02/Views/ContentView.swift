@@ -23,11 +23,19 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    HStack {
-                        Text(vm.language.name)
-                        Spacer()
+                    VStack(spacing: 1) {
+                        HStack {
+                            Text("2026年4月24日")
+                            Spacer()
+                        }
+                        HStack {
+                            Text("Mandarin")
+                                .opacity(0.6)
+                            Spacer()
+                        }
                     }
-                    .font(.system(size: 32))
+                    .font(.system(size: 30))
+                    .fontWeight(.bold)
                     .padding()
                     LazyVStack {
                         ForEach(items, id: \.id) { item in
