@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var elapsed: TimeInterval = 0
     @State private var tickTimer: Timer? = nil
     @State private var audioRecorder: AVAudioRecorder? = nil
+    @State private var editing: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -37,29 +38,46 @@ struct ContentView: View {
                     .font(.system(size: 30))
                     .fontWeight(.bold)
                     .padding()
-                    VStack {
-                        HStack {
-                            Text("Sessions")
-                            Spacer()
-                        }
-                        .padding(.horizontal, 8)
-                        LazyVStack(spacing: 4) {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                                NavigationLink(destination: SessionView(item: item)) {
-                                    SessionRow(item: item)
-                                }
-                                
-                                if index < items.count - 1 {
-                                    Divider()
-                                        .padding(.horizontal, 8)
-                                }
+                    VStack(spacing: 24) {
+                        // day
+                        VStack {
+                            HStack {
+                                Text("Daily")
+                                Spacer()
                             }
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                DayCard()
+                            }
+                            .scrollClipDisabled()
                         }
-                        .padding(4)
-                        .background(.gray.opacity(0.1))
-                        .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
+                        .padding(8)
+                        // session
+                        if !items.isEmpty {
+                            VStack {
+                                HStack {
+                                    Text("Sessions")
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 8)
+                                LazyVStack(spacing: 4) {
+                                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                                        NavigationLink(destination: SessionView(item: item)) {
+                                            SessionRow(item: item)
+                                        }
+                                        
+                                        if index < items.count - 1 {
+                                            Divider()
+                                                .padding(.horizontal, 8)
+                                        }
+                                    }
+                                }
+                                .padding(4)
+                                .background(.gray.opacity(0.15))
+                                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
+                            }
+                            .padding(8)
+                        }
                     }
-                    .padding(8)
                 }
                 .offset(y: -65)
             }
@@ -85,9 +103,9 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        
+                        editing.toggle()
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "ellipsis")
                     }
                 }
             }

@@ -38,6 +38,7 @@ struct SessionView: View {
             }
         }
         .padding()
+        .navigationTitle(item.timestamp.formatted(date: .abbreviated, time: .omitted))
         .onDisappear {
             player?.stop()
             isPlaying = false

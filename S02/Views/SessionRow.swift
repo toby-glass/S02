@@ -18,7 +18,7 @@ struct SessionRow: View {
             Spacer()
             Text(vm.mmss(from: item.duration))
             Image(systemName: "chevron.right")
-                .font(.system(size: 14))
+                    .font(.system(size: 14))
         }
         .padding(12)
         .background(.background.opacity(0.001))
