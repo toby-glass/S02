@@ -8,10 +8,20 @@
 import SwiftUI
 
 struct DayView: View {
+    
+    @State private var text: String = ""
+    @FocusState private var focus: Bool
+    
     var body: some View {
         VStack {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+            TextEditor(text: $text)
+                .focused($focus)
+                .onSubmit {
+                    focus = false
+                }
+                .font(.system(size: 18))
         }
+        .padding()
         .navigationTitle("Sun 26 Apr")
     }
 }
