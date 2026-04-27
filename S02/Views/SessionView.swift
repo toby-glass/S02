@@ -11,17 +11,17 @@ import AVFoundation
 struct SessionView: View {
 
     @Environment(CVM.self) var vm
-    var item: Item
+    var session: Session
     @State private var player: AVAudioPlayer? = nil
     @State private var isPlaying: Bool = false
 
     var body: some View {
         VStack(spacing: 16) {
-            Text(item.timestamp.formatted(date: .abbreviated, time: .shortened))
-            Text(vm.mmss(from: item.duration))
+            Text(session.timestamp.formatted(date: .abbreviated, time: .shortened))
+            Text(vm.mmss(from: session.duration))
                 .foregroundStyle(.secondary)
 
-            if item.audioURL != nil {
+            if session.audioURL != nil {
                 Button {
                     togglePlayback()
                 } label: {
@@ -38,7 +38,7 @@ struct SessionView: View {
             }
         }
         .padding()
-        .navigationTitle(item.timestamp.formatted(date: .abbreviated, time: .omitted))
+        .navigationTitle(session.timestamp.formatted(date: .abbreviated, time: .omitted))
         .onDisappear {
             player?.stop()
             isPlaying = false
@@ -52,7 +52,7 @@ struct SessionView: View {
             return
         }
 
-        guard let url = item.audioURL else { return }
+        guard let url = session.audioURL else { return }
 
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)

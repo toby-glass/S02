@@ -1,15 +1,15 @@
 //
-//  Item.swift
+//  Session.swift
 //  S02
 //
-//  Created by Toby Glass on 23/04/2026.
+//  Created by Toby Glass on 27/04/2026.
 //
 
 import Foundation
 import SwiftData
 
 @Model
-final class Item {
+final class Session {
     var timestamp: Date
     var duration: TimeInterval
     var audioFilename: String = ""

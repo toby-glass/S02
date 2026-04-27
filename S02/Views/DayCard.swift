@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct DayCard: View {
+    
+    var date: Date
+    var day: DayNote
+    
     var body: some View {
         NavigationLink {
             DayView()
@@ -15,7 +19,7 @@ struct DayCard: View {
             VStack(spacing: 12) {
                 HStack {
                     VStack {
-                        Text("我喝红茶")
+//                        Text("我喝红茶")
                         Spacer()
                     }
                     Spacer()
@@ -25,7 +29,7 @@ struct DayCard: View {
                 .background(.gray.opacity(0.15))
                 .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
                 HStack {
-                    Text("Sun 26 Apr")
+                    Text(date.formatted(date: .abbreviated, time: .omitted))
                     Spacer()
                 }
                 .padding(.horizontal, 4)

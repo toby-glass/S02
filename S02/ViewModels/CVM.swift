@@ -13,7 +13,7 @@ import Observation
 class CVM: Observable {
     var language: LanguageType = .mandarin
     var recording: Bool = false
-    var recordingItem: Item? = nil
+    var recordingSession: Session? = nil
     
     func mmss(from elapsed: TimeInterval) -> String {
         let totalSeconds = Int(elapsed.rounded(.down))

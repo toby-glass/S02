@@ -13,12 +13,14 @@ struct ContentView: View {
     
     @Environment(CVM.self) var vm
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var sessions: [Session]
+    @Query private var dayNotes: [DayNote]
     @State private var start: Date = Date()
     @State private var elapsed: TimeInterval = 0
     @State private var tickTimer: Timer? = nil
     @State private var audioRecorder: AVAudioRecorder? = nil
     @State private var editing: Bool = false
+    let visibleDayCount: Int = 7
 
     var body: some View {
         NavigationStack {
@@ -46,13 +48,21 @@ struct ContentView: View {
                                 Spacer()
                             }
                             ScrollView(.horizontal, showsIndicators: false) {
-                                DayCard()
+                                LazyHStack {
+                                    ForEach(recentDays, id: \.self) { date in
+                                        DayCard(date: date)
+                                    }
+//                                    ForEach(dayNotes, id: \.id) { day in
+//                                        DayCard(day: day)
+//                                    }
+                                }
+                                
                             }
                             .scrollClipDisabled()
                         }
                         .padding(8)
                         // session
-                        if !items.isEmpty {
+                        if !sessions.isEmpty {
                             VStack {
                                 HStack {
                                     Text("Sessions")
@@ -60,12 +70,12 @@ struct ContentView: View {
                                 }
                                 .padding(.horizontal, 8)
                                 LazyVStack(spacing: 4) {
-                                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                                        NavigationLink(destination: SessionView(item: item)) {
-                                            SessionRow(item: item)
+                                    ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
+                                        NavigationLink(destination: SessionView(session: session)) {
+                                            SessionRow(session: session)
                                         }
                                         
-                                        if index < items.count - 1 {
+                                        if index < sessions.count - 1 {
                                             Divider()
                                                 .padding(.horizontal, 8)
                                         }
@@ -114,6 +124,15 @@ struct ContentView: View {
         .fontDesign(.monospaced)
         .buttonStyle(.plain)
     }
+    
+    private var recentDays: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        return (0..<visibleDayCount).compactMap { offset in
+            calendar.date(byAdding: .day, value: -offset, to: today)
+        }
+    }
 
     private func record() {
         if !vm.recording {
@@ -125,13 +144,13 @@ struct ContentView: View {
             }
             RunLoop.main.add(tickTimer!, forMode: .common)
             
-            let item = Item(timestamp: Date())
-            vm.recordingItem = item
+            let session = Session(timestamp: Date())
+            vm.recordingSession = session
             start = Date()
 
             startAudioRecording()
         } else {
-            guard let item = vm.recordingItem else { return }
+            guard let item = vm.recordingSession else { return }
             let duration = Date().timeIntervalSince(start)
 
             audioRecorder?.stop()
@@ -150,7 +169,7 @@ struct ContentView: View {
                 print("could not save")
             }
             
-            vm.recordingItem = nil
+            vm.recordingSession = nil
             vm.recording = false
         }
     }
@@ -189,7 +208,7 @@ struct ContentView: View {
                     recorder.prepareToRecord()
                     recorder.record()
                     audioRecorder = recorder
-                    vm.recordingItem?.audioFilename = url.lastPathComponent
+                    vm.recordingSession?.audioFilename = url.lastPathComponent
                 } catch {
                     print("recorder error: \(error)")
                 }
@@ -208,13 +227,12 @@ struct ContentView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                modelContext.delete(sessions[index])
             }
         }
     }
 }
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
-}
+//
+//#Preview {
+//    ContentView()
+//}
