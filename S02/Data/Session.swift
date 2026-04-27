@@ -10,13 +10,13 @@ import SwiftData
 
 @Model
 final class Session {
+    var name: String
     var timestamp: Date
     var duration: TimeInterval
-    var audioFilename: String = ""
+    var audioFilename: String
 
-    init(timestamp: Date = Date(),
-         duration: TimeInterval = 0,
-         audioFilename: String = "") {
+    init(name: String = "Session", timestamp: Date = Date(), duration: TimeInterval = 0, audioFilename: String = "") {
+        self.name = name
         self.timestamp = timestamp
         self.duration = duration
         self.audioFilename = audioFilename

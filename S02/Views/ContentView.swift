@@ -12,9 +12,9 @@ import AVFoundation
 struct ContentView: View {
     
     @Environment(CVM.self) var vm
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) private var context
     @Query private var sessions: [Session]
-    @Query private var dayNotes: [DayNote]
+    @Query private var notes: [Note]
     @State private var start: Date = Date()
     @State private var elapsed: TimeInterval = 0
     @State private var tickTimer: Timer? = nil
@@ -50,13 +50,15 @@ struct ContentView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack {
                                     ForEach(recentDays, id: \.self) { date in
-                                        DayCard(date: date)
+                                        if let note = notes.first(where: {
+                                            Calendar.current.isDate($0.day, inSameDayAs: date)
+                                        }) {
+                                            DayCard(date: date, note: note)
+                                        } else {
+                                            DayCard(date: date)
+                                        }
                                     }
-//                                    ForEach(dayNotes, id: \.id) { day in
-//                                        DayCard(day: day)
-//                                    }
                                 }
-                                
                             }
                             .scrollClipDisabled()
                         }
@@ -161,10 +163,10 @@ struct ContentView: View {
             elapsed = 0
             
             item.duration = duration
-            modelContext.insert(item)
+            context.insert(item)
             
             do {
-                try modelContext.save()
+                try context.save()
             } catch {
                 print("could not save")
             }
@@ -227,7 +229,7 @@ struct ContentView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(sessions[index])
+                context.delete(sessions[index])
             }
         }
     }

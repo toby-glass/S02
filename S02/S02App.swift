@@ -15,7 +15,7 @@ struct S02App: App {
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Session.self, DayNote.self
+            Session.self, Note.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

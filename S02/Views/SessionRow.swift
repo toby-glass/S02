@@ -14,7 +14,7 @@ struct SessionRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            Text(session.timestamp.formatted(date: .abbreviated, time: .omitted))
+            Text(session.audioFilename)
             Spacer()
             Text(vm.mmss(from: session.duration))
             Image(systemName: "chevron.right")
