@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DayCard: View {
     
+    @Environment(CVM.self) var vm
     var date: Date
     var note: Note?
     
@@ -16,24 +17,44 @@ struct DayCard: View {
         NavigationLink {
             DayView(date: date, note: note)
         } label: {
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 HStack {
-                    VStack {
-                        if let note {
-                            Text(note.text)
+                    VStack(spacing: 6) {
+                        HStack {
+                            if vm.language == .mandarin {
+                                Text("\(Calendar.current.component(.month, from: date))月\(Calendar.current.component(.day, from: date))日")
+                            } else if vm.language == .arabic {
+                                Text("٢٨/٤")
+                            }
+                            Spacer()
                         }
+                        .opacity(0.6)
+                        Divider()
+                        HStack {
+                            if let note {
+                                Text(note.text)
+                            }
+                            Spacer()
+                        }
+                        .padding(.top, 2)
                         Spacer()
                     }
                     Spacer()
                 }
+                .font(.system(size: 20))
+                .lineHeight(.loose)
                 .padding()
-                .frame(width: 160, height: 198)
-                .background(.gray.opacity(0.15))
-                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
-                HStack {
-                    Text(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
-                    Spacer()
+                .frame(height: 198)
+                .background(.white.opacity(0.02))
+//                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
+                .overlay {
+                    ConcentricRectangle(corners: .concentric(minimum: 6))
+                        .stroke(.gray.opacity(0.25), lineWidth: 1)
                 }
+//                HStack {
+//                    Text(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+//                    Spacer()
+//                }
                 .padding(.horizontal, 4)
             }
         }

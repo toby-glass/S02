@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LanguageType: String {
+enum LanguageType: String, CaseIterable {
     case mandarin, arabic
     
     var name: String {

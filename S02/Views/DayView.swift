@@ -10,6 +10,7 @@ import SwiftData
 
 struct DayView: View {
     
+    @Environment(CVM.self) var vm
     @Environment(\.modelContext) var context
     var date: Date
     var note: Note?
@@ -18,11 +19,27 @@ struct DayView: View {
     
     var body: some View {
         VStack {
+            HStack {
+                if vm.language == .mandarin {
+                    Text("\(Calendar.current.component(.month, from: date))月\(Calendar.current.component(.day, from: date))日")
+                } else if vm.language == .arabic {
+                    Text("٢٨/٤")
+                }
+                Spacer()
+            }
+            .opacity(0.6)
+            Divider()
             TextEditor(text: $text)
                 .focused($focus)
-                .font(.system(size: 24))
+                .textEditorStyle(.plain)
+                
         }
+        .padding(.top, 120)
+        .font(.system(size: 24))
+        .lineHeight(.loose)
         .padding()
+        .background(.bg)
+        .ignoresSafeArea()
         .onTapGesture {
             if focus {
                 focus = false
@@ -30,7 +47,7 @@ struct DayView: View {
                 focus = true
             }
         }
-        .navigationTitle(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+//        .navigationTitle(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
         .onAppear {
             if let note {
                 text = note.text

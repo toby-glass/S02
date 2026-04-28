@@ -30,6 +30,7 @@ struct S02App: App {
         WindowGroup {
             ContentView()
                 .environment(vm)
+                .containerBackground(.bg, for: .navigation)
         }
         .modelContainer(sharedModelContainer)
     }

@@ -27,13 +27,17 @@ struct ContentView: View {
             ScrollView {
                 VStack {
                     VStack(spacing: 1) {
+//                        HStack {
+//                            if vm.language == .mandarin {
+//                                Text("\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
+//                            } else if vm.language == .arabic {
+//                                Text("٢٨/٤")
+//                            }
+//                            Spacer()
+//                        }
                         HStack {
-                            Text("\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Mandarin")
-                                .opacity(0.6)
+                            Text(vm.language.name)
+//                                .opacity(0.6)
                             Spacer()
                         }
                     }
@@ -42,13 +46,14 @@ struct ContentView: View {
                     .padding()
                     VStack(spacing: 24) {
                         // day
-                        VStack {
+                        VStack(spacing: 16) {
                             HStack {
-                                Text("Daily")
+                                Text("Entries")
                                 Spacer()
                             }
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack {
+                            .padding(.horizontal, 4)
+                            ScrollView(showsIndicators: false) {
+                                LazyVStack(spacing: 12) {
                                     ForEach(recentDays, id: \.self) { date in
                                         if let note = notes.first(where: {
                                             Calendar.current.isDate($0.day, inSameDayAs: date)
@@ -64,58 +69,67 @@ struct ContentView: View {
                         }
                         .padding(8)
                         // session
-                        if !sessions.isEmpty {
-                            VStack {
-                                HStack {
-                                    Text("Sessions")
-                                    Spacer()
-                                }
-                                .padding(.horizontal, 8)
-                                LazyVStack(spacing: 4) {
-                                    ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
-                                        NavigationLink(destination: SessionView(session: session)) {
-                                            SessionRow(session: session)
-                                        }
-                                        
-                                        if index < sessions.count - 1 {
-                                            Divider()
-                                                .padding(.horizontal, 8)
-                                        }
-                                    }
-                                }
-                                .padding(4)
-                                .background(.gray.opacity(0.15))
-                                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
-                            }
-                            .padding(8)
-                        }
+//                        if !sessions.isEmpty {
+//                            VStack {
+//                                HStack {
+//                                    Text("Sessions")
+//                                    Spacer()
+//                                }
+//                                .padding(.horizontal, 8)
+//                                LazyVStack(spacing: 4) {
+//                                    ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
+//                                        NavigationLink(destination: SessionView(session: session)) {
+//                                            SessionRow(session: session)
+//                                        }
+//                                        
+//                                        if index < sessions.count - 1 {
+//                                            Divider()
+//                                                .padding(.horizontal, 8)
+//                                        }
+//                                    }
+//                                }
+//                                .padding(4)
+//                                .background(.gray.opacity(0.15))
+//                                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
+//                            }
+//                            .padding(8)
+//                        }
                     }
                 }
                 .offset(y: -65)
             }
-            .overlay(alignment: .bottom) {
-                Button {
-                    record()
-                } label: {
-                    HStack(spacing: 2) {
-                        Text(buttonText())
-                            .padding(10)
-                        Image(systemName: vm.recording ? "stop.fill" : "waveform")
-                            .font(.system(size: 18))
-                            .frame(width: 46, height: 46)
-                            .background(.gray.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .foregroundStyle(.background)
-                    .padding(5)
-                    .background(.primary)
-                    .clipShape(Capsule())
-                }
-            }
+            .background(.bg)
+//            .scrollContentBackground(.hidden)
+//            .overlay(alignment: .bottom) {
+//                Button {
+//                    record()
+//                } label: {
+//                    HStack(spacing: 2) {
+//                        Text(buttonText())
+//                            .padding(10)
+//                        Image(systemName: vm.recording ? "stop.fill" : "waveform")
+//                            .font(.system(size: 18))
+//                            .frame(width: 46, height: 46)
+//                            .background(.gray.opacity(0.3))
+//                            .clipShape(Circle())
+//                    }
+//                    .foregroundStyle(.background)
+//                    .padding(5)
+//                    .background(.primary)
+//                    .clipShape(Capsule())
+//                }
+//            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        editing.toggle()
+                    Menu {
+                        Menu("Language") {
+                            ForEach(LanguageType.allCases, id: \.self) { language in
+                                Button(language.name) {
+                                    vm.language = language
+                                }
+                            }
+                        }
+//                        editing.toggle()
                     } label: {
                         Image(systemName: "ellipsis")
                     }
@@ -149,16 +163,22 @@ struct ContentView: View {
             let session = Session(timestamp: Date())
             vm.recordingSession = session
             start = Date()
-
-            startAudioRecording()
+            
+            Task {
+                await startAudioRecording()
+            }
         } else {
             guard let item = vm.recordingSession else { return }
             let duration = Date().timeIntervalSince(start)
 
             audioRecorder?.stop()
             audioRecorder = nil
+            
+            vm.recordingSession = nil
+            vm.recording = false
+            
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-
+            
             tickTimer?.invalidate()
             elapsed = 0
             
@@ -171,12 +191,11 @@ struct ContentView: View {
                 print("could not save")
             }
             
-            vm.recordingSession = nil
-            vm.recording = false
+            
         }
     }
 
-    private func startAudioRecording() {
+    private func startAudioRecording() async {
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
