@@ -37,7 +37,6 @@ struct ContentView: View {
                         }
                         HStack {
                             Text(vm.language.name)
-//                                .opacity(0.6)
                             Spacer()
                         }
                     }
@@ -47,50 +46,13 @@ struct ContentView: View {
                     VStack(spacing: 24) {
                         // day
                         VStack(spacing: 16) {
-//                            HStack {
-//                                Text("Entries")
-//                                Spacer()
-//                            }
-//                            .padding(.horizontal, 4)
                             LazyVStack(spacing: 12) {
                                 ForEach(notes, id: \.id) { note in
-//                                        if let note = notes.first(where: {
-//                                            Calendar.current.isDate($0.day, inSameDayAs: date)
-//                                        }) {
-//                                            DayCard(date: date, note: note)
-//                                        } else {
-                                        DayCard(note: note)
-//                                        }
+                                    DayCard(note: note)
                                 }
                             }
                         }
                         .padding(12)
-                        // session
-//                        if !sessions.isEmpty {
-//                            VStack {
-//                                HStack {
-//                                    Text("Sessions")
-//                                    Spacer()
-//                                }
-//                                .padding(.horizontal, 8)
-//                                LazyVStack(spacing: 4) {
-//                                    ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
-//                                        NavigationLink(destination: SessionView(session: session)) {
-//                                            SessionRow(session: session)
-//                                        }
-//                                        
-//                                        if index < sessions.count - 1 {
-//                                            Divider()
-//                                                .padding(.horizontal, 8)
-//                                        }
-//                                    }
-//                                }
-//                                .padding(4)
-//                                .background(.gray.opacity(0.15))
-//                                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
-//                            }
-//                            .padding(8)
-//                        }
                     }
                     .background(.bg2)
                 }

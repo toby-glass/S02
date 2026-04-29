@@ -12,7 +12,6 @@ struct DayView: View {
     
     @Environment(CVM.self) var vm
     @Environment(\.modelContext) var context
-//    var date: Date
     var note: Note
     @State private var text: String = ""
     @FocusState private var focus: Bool
@@ -28,7 +27,6 @@ struct DayView: View {
                 Spacer()
             }
             .opacity(0.6)
-//            Divider()
             TextEditor(text: $text)
                 .focused($focus)
                 .textEditorStyle(.plain)
@@ -49,22 +47,13 @@ struct DayView: View {
                 focus = true
             }
         }
-//        .navigationTitle(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
         .onAppear {
-//            if let note {
-                text = note.text
-//            }
+            text = note.text
         }
         .onDisappear {
-//            if let note {
-                if note.text != text {
-                    amendNote(note: note)
-                }
-//            } else {
-//                if !text.isEmpty {
-//                    insertNote()
-//                }
-//            }
+            if note.text != text {
+                amendNote(note: note)
+            }
         }
     }
     

@@ -10,7 +10,6 @@ import SwiftUI
 struct DayCard: View {
     
     @Environment(CVM.self) var vm
-//    var date: Date
     var note: Note
     
     var body: some View {
@@ -29,11 +28,8 @@ struct DayCard: View {
                             Spacer()
                         }
                         .opacity(0.6)
-//                        Divider()
                         HStack {
-//                            if let note {
-                                Text(note.text)
-//                            }
+                            Text(note.text)
                             Spacer()
                         }
                         .padding(.top, 2)
@@ -43,14 +39,8 @@ struct DayCard: View {
                 }
                 .font(.system(size: 24))
                 .lineHeight(.loose)
-//                .padding()
                 .frame(height: 204)
                 .background(.bg2.opacity(0.001))
-//                .clipShape(ConcentricRectangle(corners: .concentric(minimum: 14)))
-//                .overlay {
-//                    ConcentricRectangle(corners: .concentric(minimum: 6))
-//                        .stroke(.gray.opacity(0.25), lineWidth: 1)
-//                }
 //                HStack {
 //                    Text(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
 //                    Spacer()
