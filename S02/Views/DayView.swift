@@ -13,32 +13,36 @@ struct DayView: View {
     @Environment(CVM.self) var vm
     @Environment(\.modelContext) var context
     var note: Note
+    @State private var name: String = ""
     @State private var text: String = ""
     @FocusState private var focus: Bool
     
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 12) {
             HStack {
-                if vm.language == .mandarin {
-                    Text("\(Calendar.current.component(.month, from: note.date))月\(Calendar.current.component(.day, from: note.date))日")
-                } else if vm.language == .arabic {
-                    Text("٢٨/٤")
-                }
+//                if vm.language == .mandarin {
+//                    Text("\(Calendar.current.component(.month, from: note.date))月\(Calendar.current.component(.day, from: note.date))日")
+//                } else if vm.language == .arabic {
+//                    Text("٢٨/٤")
+//                }
+//                Text(note.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+                TextField("Title", text: $name)
                 Spacer()
             }
-            .opacity(0.6)
+            Divider()
             TextEditor(text: $text)
                 .focused($focus)
-                .textEditorStyle(.plain)
                 .padding(0)
+                .font(.system(size: 24))
                 
         }
         .padding(.top, 120)
-        .font(.system(size: 24))
-        .fontWeight(.medium)
+        .font(.system(size: 28))
+        .fontWeight(.semibold)
         .lineHeight(.loose)
-        .padding(12)
-        .background(.bg1)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(.card)
         .ignoresSafeArea()
         .onTapGesture {
             if focus {
@@ -48,13 +52,21 @@ struct DayView: View {
             }
         }
         .onAppear {
+            name = note.name
             text = note.text
         }
         .onDisappear {
+            if note.name != name {
+                amendName(note: note)
+            }
             if note.text != text {
                 amendNote(note: note)
             }
         }
+    }
+    
+    func amendName(note: Note) {
+        note.name = name
     }
     
     func amendNote(note: Note) {

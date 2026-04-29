@@ -20,11 +20,12 @@ struct DayCard: View {
                 HStack {
                     VStack(spacing: 6) {
                         HStack {
-                            if vm.language == .mandarin {
-                                Text("\(Calendar.current.component(.month, from: note.date))月\(Calendar.current.component(.day, from: note.date))日")
-                            } else if vm.language == .arabic {
-                                Text("٢٨/٤")
-                            }
+//                            if vm.language == .mandarin {
+//                                Text("\(Calendar.current.component(.month, from: note.date))月\(Calendar.current.component(.day, from: note.date))日")
+////                                Text(note.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+//                            } else if vm.language == .arabic {
+//                                Text("٢٨/٤")
+//                            }
                             Spacer()
                         }
                         .opacity(0.6)
@@ -38,13 +39,18 @@ struct DayCard: View {
                     Spacer()
                 }
                 .font(.system(size: 24))
+                .fontWeight(.semibold)
                 .lineHeight(.loose)
+                .padding()
                 .frame(height: 204)
-                .background(.bg2.opacity(0.001))
-//                HStack {
-//                    Text(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
-//                    Spacer()
-//                }
+                .background(.card)
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                HStack(spacing: 12) {
+                    Text(note.name)
+                    Text(note.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+                        .opacity(0.6)
+                    Spacer()
+                }
                 .padding(.horizontal, 4)
             }
         }

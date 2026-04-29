@@ -29,7 +29,7 @@ struct ContentView: View {
                     VStack(spacing: 1) {
                         HStack {
                             if vm.language == .mandarin {
-                                Text("\(Calendar.current.component(.year, from: Date()))年\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
+                                Text("\(String(Calendar.current.component(.year, from: Date())))年\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
                             } else if vm.language == .arabic {
                                 Text("٢٨/٤")
                             }
@@ -43,6 +43,29 @@ struct ContentView: View {
                     .font(.system(size: 30))
                     .fontWeight(.bold)
                     .padding()
+                    HStack(spacing: 16) {
+                        HStack(spacing: 4) {
+                            Image("F1")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            Text("Characters")
+                        }
+                        HStack(spacing: 4) {
+                            Image("F2")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            Text("Scan")
+                        }
+                        HStack(spacing: 4) {
+                            Image("F3")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            Text("Analyse")
+                        }
+                        Spacer()
+                    }
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal)
                     VStack(spacing: 24) {
                         // day
                         VStack(spacing: 16) {
@@ -53,40 +76,41 @@ struct ContentView: View {
                             }
                         }
                         .padding(12)
+                        Spacer()
                     }
-                    .background(.bg2)
                 }
                 .offset(y: -64)
             }
-            .background(.bg1)
+            .background(.bg2)
 //            .scrollContentBackground(.hidden)
-//            .overlay(alignment: .bottom) {
-//                Button {
+            .overlay(alignment: .bottom) {
+                Button {
 //                    record()
-//                } label: {
-//                    HStack(spacing: 2) {
+                    addNote()
+                } label: {
+                    HStack(spacing: 2) {
+                        Text("Add note")
 //                        Text(buttonText())
-//                            .padding(10)
+                            .padding(10)
 //                        Image(systemName: vm.recording ? "stop.fill" : "waveform")
 //                            .font(.system(size: 18))
 //                            .frame(width: 46, height: 46)
 //                            .background(.gray.opacity(0.3))
 //                            .clipShape(Circle())
-//                    }
-//                    .foregroundStyle(.background)
-//                    .padding(5)
-//                    .background(.primary)
-//                    .clipShape(Capsule())
-//                }
-//            }
+                    }
+                    .foregroundStyle(.background)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(.onset)
+                    .clipShape(Capsule())
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Button("Add entry") {
-                            let note = Note(date: Date())
-                            context.insert(note)
-                            try? context.save()
-                        }
+//                        Button("Add entry") {
+//                            addNote()
+//                        }
                         Menu("Language") {
                             ForEach(LanguageType.allCases, id: \.self) { language in
                                 Button(language.name) {
@@ -104,6 +128,20 @@ struct ContentView: View {
         .fontWeight(.medium)
         .fontDesign(.monospaced)
         .buttonStyle(.plain)
+        .textFieldStyle(.plain)
+        .textEditorStyle(.plain)
+    }
+    
+    func addNote() {
+//        if notes.contains(where: {
+//            Calendar.current.isDate($0.date, inSameDayAs: Date())
+//        }) {
+//            return
+//        } else {
+            let note = Note(date: Date())
+            context.insert(note)
+            try? context.save()
+//        }
     }
     
     private var recentDays: [Date] {
