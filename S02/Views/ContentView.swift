@@ -133,15 +133,9 @@ struct ContentView: View {
     }
     
     func addNote() {
-//        if notes.contains(where: {
-//            Calendar.current.isDate($0.date, inSameDayAs: Date())
-//        }) {
-//            return
-//        } else {
-            let note = Note(date: Date())
-            context.insert(note)
-            try? context.save()
-//        }
+        let note = Note(date: Date())
+        context.insert(note)
+        try? context.save()
     }
     
     private var recentDays: [Date] {

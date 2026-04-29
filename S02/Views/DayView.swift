@@ -37,7 +37,7 @@ struct DayView: View {
                 
         }
         .padding(.top, 120)
-        .font(.system(size: 28))
+        .font(.system(size: 26))
         .fontWeight(.semibold)
         .lineHeight(.loose)
         .padding(.horizontal, 16)
