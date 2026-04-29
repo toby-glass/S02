@@ -11,12 +11,12 @@ import SwiftData
 @Model
 class Note: Identifiable {
     var id: UUID
-    var day: Date
+    var date: Date
     var text: String
     
-    init(id: UUID = UUID(), day: Date = Date(), text: String = "") {
+    init(id: UUID = UUID(), date: Date = Date(), text: String = "") {
         self.id = id
-        self.day = day
+        self.date = date
         self.text = text
     }
 }

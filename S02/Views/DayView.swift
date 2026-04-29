@@ -12,33 +12,35 @@ struct DayView: View {
     
     @Environment(CVM.self) var vm
     @Environment(\.modelContext) var context
-    var date: Date
-    var note: Note?
+//    var date: Date
+    var note: Note
     @State private var text: String = ""
     @FocusState private var focus: Bool
     
     var body: some View {
-        VStack {
+        VStack(spacing: 4) {
             HStack {
                 if vm.language == .mandarin {
-                    Text("\(Calendar.current.component(.month, from: date))月\(Calendar.current.component(.day, from: date))日")
+                    Text("\(Calendar.current.component(.month, from: note.date))月\(Calendar.current.component(.day, from: note.date))日")
                 } else if vm.language == .arabic {
                     Text("٢٨/٤")
                 }
                 Spacer()
             }
             .opacity(0.6)
-            Divider()
+//            Divider()
             TextEditor(text: $text)
                 .focused($focus)
                 .textEditorStyle(.plain)
+                .padding(0)
                 
         }
         .padding(.top, 120)
         .font(.system(size: 24))
+        .fontWeight(.medium)
         .lineHeight(.loose)
-        .padding()
-        .background(.bg)
+        .padding(12)
+        .background(.bg1)
         .ignoresSafeArea()
         .onTapGesture {
             if focus {
@@ -49,20 +51,20 @@ struct DayView: View {
         }
 //        .navigationTitle(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
         .onAppear {
-            if let note {
+//            if let note {
                 text = note.text
-            }
+//            }
         }
         .onDisappear {
-            if let note {
+//            if let note {
                 if note.text != text {
                     amendNote(note: note)
                 }
-            } else {
-                if !text.isEmpty {
-                    insertNote()
-                }
-            }
+//            } else {
+//                if !text.isEmpty {
+//                    insertNote()
+//                }
+//            }
         }
     }
     

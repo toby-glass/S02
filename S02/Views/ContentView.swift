@@ -27,14 +27,14 @@ struct ContentView: View {
             ScrollView {
                 VStack {
                     VStack(spacing: 1) {
-//                        HStack {
-//                            if vm.language == .mandarin {
-//                                Text("\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
-//                            } else if vm.language == .arabic {
-//                                Text("٢٨/٤")
-//                            }
-//                            Spacer()
-//                        }
+                        HStack {
+                            if vm.language == .mandarin {
+                                Text("\(Calendar.current.component(.year, from: Date()))年\(Calendar.current.component(.month, from: Date()))月\(Calendar.current.component(.day, from: Date()))日")
+                            } else if vm.language == .arabic {
+                                Text("٢٨/٤")
+                            }
+                            Spacer()
+                        }
                         HStack {
                             Text(vm.language.name)
 //                                .opacity(0.6)
@@ -47,27 +47,24 @@ struct ContentView: View {
                     VStack(spacing: 24) {
                         // day
                         VStack(spacing: 16) {
-                            HStack {
-                                Text("Entries")
-                                Spacer()
-                            }
-                            .padding(.horizontal, 4)
-                            ScrollView(showsIndicators: false) {
-                                LazyVStack(spacing: 12) {
-                                    ForEach(recentDays, id: \.self) { date in
-                                        if let note = notes.first(where: {
-                                            Calendar.current.isDate($0.day, inSameDayAs: date)
-                                        }) {
-                                            DayCard(date: date, note: note)
-                                        } else {
-                                            DayCard(date: date)
-                                        }
-                                    }
+//                            HStack {
+//                                Text("Entries")
+//                                Spacer()
+//                            }
+//                            .padding(.horizontal, 4)
+                            LazyVStack(spacing: 12) {
+                                ForEach(notes, id: \.id) { note in
+//                                        if let note = notes.first(where: {
+//                                            Calendar.current.isDate($0.day, inSameDayAs: date)
+//                                        }) {
+//                                            DayCard(date: date, note: note)
+//                                        } else {
+                                        DayCard(note: note)
+//                                        }
                                 }
                             }
-                            .scrollClipDisabled()
                         }
-                        .padding(8)
+                        .padding(12)
                         // session
 //                        if !sessions.isEmpty {
 //                            VStack {
@@ -95,10 +92,11 @@ struct ContentView: View {
 //                            .padding(8)
 //                        }
                     }
+                    .background(.bg2)
                 }
-                .offset(y: -65)
+                .offset(y: -64)
             }
-            .background(.bg)
+            .background(.bg1)
 //            .scrollContentBackground(.hidden)
 //            .overlay(alignment: .bottom) {
 //                Button {
@@ -122,6 +120,11 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        Button("Add entry") {
+                            let note = Note(date: Date())
+                            context.insert(note)
+                            try? context.save()
+                        }
                         Menu("Language") {
                             ForEach(LanguageType.allCases, id: \.self) { language in
                                 Button(language.name) {
