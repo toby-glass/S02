@@ -12,6 +12,7 @@ import AVFoundation
 struct ContentView: View {
     
     @Environment(CVM.self) var vm
+//    @Bindable var bvm: CVM
     @Environment(\.modelContext) private var context
     @Query private var sessions: [Session]
     @Query private var notes: [Note]
@@ -23,9 +24,11 @@ struct ContentView: View {
     let visibleDayCount: Int = 7
 
     var body: some View {
+        @Bindable var vm = vm
+        
         NavigationStack {
             ScrollView {
-                VStack {
+                VStack(spacing: 8) {
                     VStack(spacing: 1) {
                         HStack {
                             if vm.language == .mandarin {
@@ -44,23 +47,8 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .padding()
                     HStack(spacing: 16) {
-                        HStack(spacing: 4) {
-                            Image("F1")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                            Text("Characters")
-                        }
-                        HStack(spacing: 4) {
-                            Image("F2")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                            Text("Scan")
-                        }
-                        HStack(spacing: 4) {
-                            Image("F3")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                            Text("Analyse")
+                        ForEach(HomeToolType.allCases, id: \.self) { tool in
+                            HomeToolButton(tool: tool)
                         }
                         Spacer()
                     }
@@ -108,9 +96,6 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-//                        Button("Add entry") {
-//                            addNote()
-//                        }
                         Menu("Language") {
                             ForEach(LanguageType.allCases, id: \.self) { language in
                                 Button(language.name) {
@@ -118,10 +103,19 @@ struct ContentView: View {
                                 }
                             }
                         }
-//                        editing.toggle()
                     } label: {
                         Image(systemName: "ellipsis")
                     }
+                }
+            }
+            .sheet(item: $vm.toolView) { tool in
+                switch tool {
+                case .characters:
+                    ToolCharacterView()
+                case .scan:
+                    ToolScanView()
+                case .analyze:
+                    ToolAnalyzeView()
                 }
             }
         }
